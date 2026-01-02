@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll()
 
                         // 2. Swagger UI (개발 환경)
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
 
                         // 3. 인증/인가 관련 엔드포인트
                         .requestMatchers("/v1/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()

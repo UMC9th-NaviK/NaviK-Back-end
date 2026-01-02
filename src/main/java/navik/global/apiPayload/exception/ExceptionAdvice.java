@@ -74,7 +74,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 });
 
         log.warn("MethodArgumentNotValidException: {}", errors);
-        return ApiResponse.onFailure(GeneralErrorCode.INVALID_INPUT_VALUE, errors);
+        return (ResponseEntity<Object>) (ResponseEntity<?>) ApiResponse.onFailure(GeneralErrorCode.INVALID_INPUT_VALUE, errors);
     }
 
     /**
@@ -91,7 +91,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers,
                                                                HttpStatusCode status, WebRequest request) {
         log.warn("HttpMessageNotReadableException: {}", e.getMessage());
-        return ApiResponse.onFailure(GeneralErrorCode.INVALID_INPUT_VALUE, null);
+        return (ResponseEntity<Object>) (ResponseEntity<?>) ApiResponse.onFailure(GeneralErrorCode.INVALID_INPUT_VALUE, null);
     }
 
     /**

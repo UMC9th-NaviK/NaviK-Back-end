@@ -3,6 +3,7 @@ package navik.auth.redis;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -13,13 +14,13 @@ import org.springframework.data.redis.core.index.Indexed;
 @RedisHash(value = "refreshToken", timeToLive = 60 * 60 * 24 * 14) // 14일
 public class RefreshToken {
 
-    @Id
-    private String id; // User ID (email or PK)
+	@Id
+	private String id; // User ID (email or PK)
 
-    @Indexed
-    private String token;
+	@Indexed
+	private String token;
 
-    public void updateToken(String token) {
-        this.token = token;
-    }
+	public void updateToken(String token) {
+		this.token = token;
+	}
 }

@@ -4,8 +4,6 @@ spring:
   profiles:
     active: ${SPRING_ACTIVE_PROFILE:dev}
 
-
-
   jpa:
     properties:
       hibernate:

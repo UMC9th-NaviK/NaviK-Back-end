@@ -8,9 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDateTime;
 
@@ -21,14 +20,10 @@ import java.time.LocalDateTime;
  * @param <T> 응답 데이터의 타입
  */
 @Getter
-public class ApiResponse<T> extends ResponseEntity<Object> {
+public class ApiResponse<T> extends ResponseEntity<ApiResponse.Body<T>> {
 
-    public ApiResponse(Body<T> body, HttpStatus status) {
-        super(body, status);
-    }
-
-    public ApiResponse(MultiValueMap<String, String> headers, Body<T> body, HttpStatus status) {
-        super(body, headers, status);
+    private ApiResponse(ResponseEntity<Body<T>> responseEntity) {
+        super(responseEntity.getBody(), responseEntity.getHeaders(), responseEntity.getStatusCode());
     }
 
     /**
@@ -61,7 +56,7 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
      * @return 성공 응답 {@link ApiResponse}
      */
     public static <T> ApiResponse<T> onSuccess(BaseCode code, T result) {
-        return new ApiResponse<>(createBody(true, code, result), code.getHttpStatus());
+        return buildResponse(true, code, result, null);
     }
 
     /**
@@ -84,7 +79,7 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
      * @return 실패 응답 {@link ApiResponse}
      */
     public static <T> ApiResponse<T> onFailure(BaseCode code, T result) {
-        return new ApiResponse<>(createBody(false, code, result), code.getHttpStatus());
+        return buildResponse(false, code, result, null);
     }
 
     /**
@@ -107,8 +102,8 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
      * @param <T>     응답 데이터의 타입
      * @return 성공 응답 {@link ApiResponse}
      */
-    public static <T> ApiResponse<T> onSuccess(MultiValueMap<String, String> headers, BaseCode code, T result) {
-        return new ApiResponse<>(headers, createBody(true, code, result), code.getHttpStatus());
+    public static <T> ApiResponse<T> onSuccess(HttpHeaders headers, BaseCode code, T result) {
+        return buildResponse(true, code, result, headers);
     }
 
     /**
@@ -120,8 +115,8 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
      * @param <T>     응답 데이터의 타입
      * @return 실패 응답 {@link ApiResponse}
      */
-    public static <T> ApiResponse<T> onFailure(MultiValueMap<String, String> headers, BaseCode code, T result) {
-        return new ApiResponse<>(headers, createBody(false, code, result), code.getHttpStatus());
+    public static <T> ApiResponse<T> onFailure(HttpHeaders headers, BaseCode code, T result) {
+        return buildResponse(false, code, result, headers);
     }
 
     /**
@@ -137,13 +132,18 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
     }
 
     /**
+     * API 응답을 생성하는 통합 빌더 메서드입니다.
+     */
+    private static <T> ApiResponse<T> buildResponse(boolean isSuccess, BaseCode code, T result, HttpHeaders headers) {
+        ResponseEntity.BodyBuilder builder = ResponseEntity.status(code.getHttpStatus());
+        if (headers != null) {
+            builder.headers(headers);
+        }
+        return new ApiResponse<>(builder.body(createBody(isSuccess, code, result)));
+    }
+
+    /**
      * API 응답 Body를 생성하는 내부 헬퍼 메서드입니다.
-     *
-     * @param isSuccess 성공 여부
-     * @param code      상태 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param result    응답 데이터
-     * @param <T>       응답 데이터의 타입
-     * @return 생성된 Body {@link Body}
      */
     private static <T> Body<T> createBody(boolean isSuccess, BaseCode code, T result) {
         return Body.<T>builder()

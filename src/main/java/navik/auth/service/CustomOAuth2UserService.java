@@ -4,6 +4,7 @@ import navik.auth.entity.Member;
 import navik.auth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -20,39 +21,39 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-        private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
-        @Setter
-        private OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+	@Setter
+	private OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 
-        @Override
-        public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-                OAuth2User oAuth2User = delegate.loadUser(userRequest);
+	@Override
+	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+		OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-                String registrationId = userRequest.getClientRegistration().getRegistrationId();
-                String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                                .getUserInfoEndpoint().getUserNameAttributeName();
+		String registrationId = userRequest.getClientRegistration().getRegistrationId();
+		String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+			.getUserInfoEndpoint().getUserNameAttributeName();
 
-                OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
-                                oAuth2User.getAttributes());
+		OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
+			oAuth2User.getAttributes());
 
-                Member member = saveOrUpdate(attributes);
+		Member member = saveOrUpdate(attributes);
 
-                // 이메일을 Principal Name으로 사용하기 위해 attributes에 email 추가 및 nameAttributeKey 변경
-                Map<String, Object> newAttributes = new java.util.HashMap<>(attributes.getAttributes());
-                newAttributes.put("email", attributes.getEmail());
+		// 이메일을 Principal Name으로 사용하기 위해 attributes에 email 추가 및 nameAttributeKey 변경
+		Map<String, Object> newAttributes = new java.util.HashMap<>(attributes.getAttributes());
+		newAttributes.put("email", attributes.getEmail());
 
-                return new DefaultOAuth2User(
-                                Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
-                                newAttributes,
-                                "email");
-        }
+		return new DefaultOAuth2User(
+			Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
+			newAttributes,
+			"email");
+	}
 
-        private Member saveOrUpdate(OAuthAttributes attributes) {
-                Member member = memberRepository.findByEmail(attributes.getEmail())
-                                .map(entity -> entity.update(attributes.getName()))
-                                .orElse(attributes.toEntity());
+	private Member saveOrUpdate(OAuthAttributes attributes) {
+		Member member = memberRepository.findByEmail(attributes.getEmail())
+			.map(entity -> entity.update(attributes.getName()))
+			.orElse(attributes.toEntity());
 
-                return memberRepository.save(member);
-        }
+		return memberRepository.save(member);
+	}
 }
