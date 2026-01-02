@@ -1,4 +1,5 @@
-# Created by .ignore support plugin (hsz.mobi)
+HELP.md
+.gradle
 ### Gradle ###
 .gradle/
 build/
@@ -6,6 +7,17 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 ### Java ###
 # Compiled class file
 *.class
@@ -34,13 +46,20 @@ build/
 hs_err_pid*
 
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iml
 *.iws
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
 ### VS Code ###
 .vscode/
