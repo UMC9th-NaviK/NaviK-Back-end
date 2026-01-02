@@ -24,7 +24,7 @@ public class LoggingAspect {
 	/**
 	 * 컨트롤러와 서비스 레이어 전체를 대상으로 하는 Pointcut을 정의합니다.
 	 */
-	@Pointcut("execution(* com.myApp.domain..controller..*(..)) || execution(* com.myApp.domain..service..*(..))")
+	@Pointcut("execution(* navik.domain..controller..*(..)) || execution(* navik.domain..service..*(..))")
 	public void applicationLayer() {
 	}
 
