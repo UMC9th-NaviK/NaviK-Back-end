@@ -10,6 +10,6 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class GeneralExceptionHandler extends RuntimeException{
+public class GeneralExceptionHandler extends RuntimeException {
     private final BaseCode code;
 }

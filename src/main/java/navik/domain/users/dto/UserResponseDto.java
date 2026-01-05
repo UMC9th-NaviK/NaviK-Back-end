@@ -13,19 +13,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserResponseDto {
 
-	private Long id;
-	private String name;
-	private String email;
-	private Role role;
-	private String socialType;
+    private Long id;
+    private String name;
+    private String email;
+    private Role role;
+    private String socialType;
 
-	public static UserResponseDto from(Member member) {
-		return UserResponseDto.builder()
-			.id(member.getId())
-			.name(member.getName())
-			.email(member.getEmail())
-			.role(member.getRole())
-			.socialType(member.getSocialType())
-			.build();
-	}
+    public static UserResponseDto from(Member member) {
+        return UserResponseDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .role(member.getRole())
+                .socialType(member.getSocialType())
+                .build();
+    }
 }

@@ -22,79 +22,79 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-	private final JwtTokenProvider jwtTokenProvider;
-	private final RefreshTokenRepository refreshTokenRepository;
-	private final StringRedisTemplate redisTemplate;
-	private final CustomUserDetailsService customUserDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final StringRedisTemplate redisTemplate;
+    private final CustomUserDetailsService customUserDetailsService;
 
-	@org.springframework.beans.factory.annotation.Value("${spring.jwt.refresh-token-validity-in-seconds}")
-	private long refreshTokenValidityInSeconds;
+    @org.springframework.beans.factory.annotation.Value("${spring.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenValidityInSeconds;
 
-	@Transactional
-	public TokenDto reissue(String refreshToken) {
-		// 1. Refresh Token 검증
-		if (!jwtTokenProvider.validateToken(refreshToken)) {
-			throw new GeneralExceptionHandler(AuthErrorCode.INVALID_REFRESH_TOKEN);
-		}
+    @Transactional
+    public TokenDto reissue(String refreshToken) {
+        // 1. Refresh Token 검증
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new GeneralExceptionHandler(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
 
-		// 2. Refresh Token 에서 email 가져오기
-		String email = jwtTokenProvider.getSubject(refreshToken);
+        // 2. Refresh Token 에서 사용자 ID 가져오기
+        String userIdStr = jwtTokenProvider.getSubject(refreshToken);
 
-		// 3. Redis 에서 id(email) 를 기반으로 저장된 Refresh Token 값을 가져옴
-		RefreshToken redisRefreshToken = refreshTokenRepository.findById(email)
-			.orElseThrow(() -> new GeneralExceptionHandler(AuthErrorCode.INVALID_REFRESH_TOKEN));
+        // 3. Redis 에서 id(userId) 를 기반으로 저장된 Refresh Token 값을 가져옴
+        RefreshToken redisRefreshToken = refreshTokenRepository.findById(userIdStr)
+                .orElseThrow(() -> new GeneralExceptionHandler(AuthErrorCode.INVALID_REFRESH_TOKEN));
 
-		// 4. Refresh Token 일치하는지 검사
-		if (!redisRefreshToken.getToken().equals(refreshToken)) {
-			throw new GeneralExceptionHandler(AuthErrorCode.REFRESH_TOKEN_MISMATCH);
-		}
+        // 4. Refresh Token 일치하는지 검사
+        if (!redisRefreshToken.getToken().equals(refreshToken)) {
+            throw new GeneralExceptionHandler(AuthErrorCode.REFRESH_TOKEN_MISMATCH);
+        }
 
-		// 5. Refresh Token & AccessToken
-		UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-			userDetails.getAuthorities());
-		TokenDto tokenDto = jwtTokenProvider.generateTokenDto(authentication);
+        // 5. Refresh Token & AccessToken
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userIdStr);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
+        TokenDto tokenDto = jwtTokenProvider.generateTokenDto(authentication);
 
-		// 6. 리프레시 토큰 갱신 (RTR 방식)
-		redisRefreshToken.updateToken(tokenDto.getRefreshToken());
-		refreshTokenRepository.save(redisRefreshToken);
+        // 6. 리프레시 토큰 갱신 (RTR 방식)
+        redisRefreshToken.updateToken(tokenDto.getRefreshToken());
+        refreshTokenRepository.save(redisRefreshToken);
 
-		return tokenDto;
-	}
+        return tokenDto;
+    }
 
-	@Transactional
-	public void logout(String accessToken, String refreshToken) {
-		// Bearer 제거
-		if (accessToken != null && accessToken.startsWith("Bearer ")) {
-			accessToken = accessToken.substring(7);
-		}
+    @Transactional
+    public void logout(String accessToken, String refreshToken) {
+        // Bearer 제거
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7);
+        }
 
-		// 1. Access Token 검증
-		if (!jwtTokenProvider.validateToken(accessToken)) {
-			throw new GeneralExceptionHandler(AuthErrorCode.AUTH_TOKEN_INVALID);
-		}
+        // 1. Access Token 검증
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            throw new GeneralExceptionHandler(AuthErrorCode.AUTH_TOKEN_INVALID);
+        }
 
-		// 2. Access Token 에서 User ID 가져오기
-		Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        // 2. Access Token 에서 User ID 가져오기
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
 
-		// 3. Redis 에서 해당 User ID 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제
-		if (refreshTokenRepository.findById(authentication.getName()).isPresent()) {
-			refreshTokenRepository.deleteById(authentication.getName());
-		}
+        // 3. Redis 에서 해당 User ID 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제
+        if (refreshTokenRepository.findById(authentication.getName()).isPresent()) {
+            refreshTokenRepository.deleteById(authentication.getName());
+        }
 
-		// 4. Access Token 유효시간을 가져와서 BlackList로 저장
-		Long expiration = jwtTokenProvider.getExpiration(accessToken);
-		redisTemplate.opsForValue()
-			.set("blacklist:" + accessToken, "logout", expiration, java.util.concurrent.TimeUnit.MILLISECONDS);
-	}
+        // 4. Access Token 유효시간을 가져와서 BlackList로 저장
+        Long expiration = jwtTokenProvider.getExpiration(accessToken);
+        redisTemplate.opsForValue()
+                .set("blacklist:" + accessToken, "logout", expiration, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
 
-	public org.springframework.http.ResponseCookie createRefreshTokenCookie(String refreshToken) {
-		return org.springframework.http.ResponseCookie.from("refresh_token", refreshToken)
-			.httpOnly(true)
-			.secure(true)
-			.path("/v1/auth")
-			.maxAge(refreshTokenValidityInSeconds)
-			.sameSite("None")
-			.build();
-	}
+    public org.springframework.http.ResponseCookie createRefreshTokenCookie(String refreshToken) {
+        return org.springframework.http.ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/v1/auth")
+                .maxAge(refreshTokenValidityInSeconds)
+                .sameSite("None")
+                .build();
+    }
 }

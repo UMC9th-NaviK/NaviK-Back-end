@@ -31,12 +31,11 @@ import java.util.Optional;
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     /**
-     * @Valid 어노테이션을 통한 검증 실패 시 발생하는 {@link ConstraintViolationException}을 처리합니다.
-     * 주로 @RequestParam, @PathVariable 에서 검증 실패 시 발생합니다.
-     *
      * @param e       발생한 {@link ConstraintViolationException}
      * @param request 현재 요청 객체
      * @return 에러 응답 {@link ApiResponse}
+     * @Valid 어노테이션을 통한 검증 실패 시 발생하는 {@link ConstraintViolationException}을 처리합니다.
+     * 주로 @RequestParam, @PathVariable 에서 검증 실패 시 발생합니다.
      */
     @ExceptionHandler
     public ApiResponse<Object> validation(ConstraintViolationException e, WebRequest request) {
@@ -51,14 +50,13 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * @Valid 어노테이션을 통한 검증 실패 시 발생하는 {@link MethodArgumentNotValidException}을 처리합니다.
-     * 주로 @RequestBody 에서 검증 실패 시 발생합니다.
-     *
      * @param e       발생한 {@link MethodArgumentNotValidException}
      * @param headers 응답에 포함될 HTTP 헤더
      * @param status  응답의 HTTP 상태 코드
      * @param request 현재 요청 객체
      * @return 에러 응답 {@link ResponseEntity}
+     * @Valid 어노테이션을 통한 검증 실패 시 발생하는 {@link MethodArgumentNotValidException}을 처리합니다.
+     * 주로 @RequestBody 에서 검증 실패 시 발생합니다.
      */
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers,

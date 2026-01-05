@@ -14,13 +14,13 @@ import org.springframework.data.redis.core.index.Indexed;
 @RedisHash(value = "refreshToken", timeToLive = 60 * 60 * 24 * 14) // 14일
 public class RefreshToken {
 
-	@Id
-	private String id; // User ID (email or PK)
+    @Id
+    private String id; // User ID (PK)
 
-	@Indexed
-	private String token;
+    @Indexed
+    private String token;
 
-	public void updateToken(String token) {
-		this.token = token;
-	}
+    public void updateToken(String token) {
+        this.token = token;
+    }
 }

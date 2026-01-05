@@ -59,7 +59,6 @@ spring:
             scope:
               - profile_nickname
               - account_email
-              - openid
             client-name: Kakao
           naver:
             client-id: ${NAVER_CLIENT_ID}

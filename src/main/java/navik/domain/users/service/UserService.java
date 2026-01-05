@@ -15,17 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
 
-	private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-	public UserResponseDto getUser(Long userId) {
-		Member member = memberRepository.findById(userId)
-			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
-		return UserResponseDto.from(member);
-	}
+    public UserResponseDto getUser(Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
+        return UserResponseDto.from(member);
+    }
 
-	public UserResponseDto getMyInfo(String email) {
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
-		return UserResponseDto.from(member);
-	}
+    public UserResponseDto getMyInfo(Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
+        return UserResponseDto.from(member);
+    }
 }
