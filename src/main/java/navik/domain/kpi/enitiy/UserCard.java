@@ -11,7 +11,7 @@ import navik.global.common.BaseEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "user_card",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"kpi_card_id", "member_id"}))
+    uniqueConstraints = @UniqueConstraint(columnNames = {"kpi_card_id", "user_id"}))
 public class UserCard extends BaseEntity {
 
     @Id

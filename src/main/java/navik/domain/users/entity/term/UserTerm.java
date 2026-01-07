@@ -11,7 +11,7 @@ import navik.global.common.BaseEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "user_terms",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "term_id"}))
+    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "term_id"}))
 public class UserTerm extends BaseEntity {
 
     @Id
@@ -19,7 +19,7 @@ public class UserTerm extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
