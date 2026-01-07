@@ -27,6 +27,17 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    /**
+     * Configures and returns the application's SecurityFilterChain.
+     *
+     * <p>The chain disables CSRF, form login, and HTTP Basic; disables frame options; uses stateless
+     * sessions; permits public access to static resources, the H2 console, Swagger docs, authentication
+     * and S3 endpoints; requires authentication for all other requests; returns a JSON 401 body for
+     * unauthenticated access; enables OAuth2 login with a custom user service and success handler; and
+     * registers a JWT authentication filter before the username/password authentication filter.
+     *
+     * @return the configured SecurityFilterChain
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

@@ -22,6 +22,14 @@ public class BlacklistAspect {
 
     private final StringRedisTemplate redisTemplate;
 
+    /**
+     * Prevents execution when the current request's bearer token is present in the blacklist.
+     *
+     * Retrieves the Authorization header from the current HttpServletRequest, extracts a token when the header starts with "Bearer ",
+     * and checks Redis for the key "blacklist:<token>". If a non-empty value is found the method throws an authentication error.
+     *
+     * @throws GeneralExceptionHandler with AuthErrorCode.AUTH_TOKEN_INVALID when the bearer token is blacklisted in Redis
+     */
     @Before("@annotation(navik.auth.annotation.CheckBlacklist)")
     public void checkBlacklist() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())

@@ -14,6 +14,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthUserArgumentResolver authUserArgumentResolver;
 
+    /**
+     * Registers custom argument resolvers with the given list so Spring MVC can resolve controller method arguments.
+     *
+     * Adds the injected AuthUserArgumentResolver to the provided list of HandlerMethodArgumentResolver instances.
+     *
+     * @param resolvers the mutable list of argument resolvers to register custom resolvers with
+     */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(authUserArgumentResolver);

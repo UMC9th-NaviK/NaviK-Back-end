@@ -24,16 +24,18 @@ import lombok.extern.slf4j.Slf4j;
 public class LoggingAspect {
 
     /**
-     * 컨트롤러와 서비스 레이어 전체를 대상으로 하는 Pointcut을 정의합니다.
+     * Pointcut that matches execution of any method inside the controller or service packages under `navik.domain`.
+     *
+     * Matches methods declared in any `navik.domain..controller..*` or `navik.domain..service..*` package, including nested subpackages.
      */
     @Pointcut("execution(* navik.domain..controller..*(..)) || execution(* navik.domain..service..*(..))")
     public void applicationLayer() {
     }
 
     /**
-     * 메서드 실행 전에 요청 정보를 로그로 기록합니다.
+     * Logs request information for an application-layer method immediately before execution.
      *
-     * @param joinPoint 프록시된 메서드에 대한 정보를 제공하는 JoinPoint 객체
+     * @param joinPoint provides context about the proxied method being invoked (signature and arguments)
      */
     @Before("applicationLayer()")
     public void logRequest(JoinPoint joinPoint) {
@@ -43,10 +45,10 @@ public class LoggingAspect {
     }
 
     /**
-     * 메서드가 정상적으로 실행되고 반환된 후에 응답 정보를 로그로 기록합니다.
+     * Logs response information after a method matched by the application layer pointcut returns.
      *
-     * @param joinPoint 프록시된 메서드에 대한 정보를 제공하는 JoinPoint 객체
-     * @param result    메서드가 반환한 결과 객체
+     * @param joinPoint the JoinPoint providing information about the proxied method
+     * @param result    the object returned by the method
      */
     @AfterReturning(pointcut = "applicationLayer()", returning = "result")
     public void logResponse(JoinPoint joinPoint, Object result) {
@@ -55,10 +57,10 @@ public class LoggingAspect {
     }
 
     /**
-     * 메서드 실행 중 예외가 발생했을 때 예외 정보를 로그로 기록합니다.
+     * Logs exception details (including stack trace) when a matched application-layer method throws an exception.
      *
-     * @param joinPoint 프록시된 메서드에 대한 정보를 제공하는 JoinPoint 객체
-     * @param e         발생한 예외 객체
+     * @param joinPoint information about the proxied method where the exception occurred
+     * @param e the thrown exception
      */
     @AfterThrowing(pointcut = "applicationLayer()", throwing = "e")
     public void logException(JoinPoint joinPoint, Throwable e) {
@@ -67,11 +69,11 @@ public class LoggingAspect {
     }
 
     /**
-     * 메서드의 실행 시간을 측정하고 로그로 기록합니다.
+     * Measures and logs the execution duration of the intercepted method.
      *
-     * @param joinPoint 프록시된 메서드에 대한 정보를 제공하는 ProceedingJoinPoint 객체
-     * @return 실제 메서드가 반환하는 결과 객체
-     * @throws Throwable 메서드 실행 중 발생할 수 있는 예외
+     * @param joinPoint the proceeding join point representing the intercepted method invocation
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws an exception
      */
     @Around("applicationLayer()")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {

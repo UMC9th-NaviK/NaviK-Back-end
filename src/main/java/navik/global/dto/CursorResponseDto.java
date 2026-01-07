@@ -34,6 +34,13 @@ public class CursorResponseDto<T> {
      */
     private final boolean hasNext;
 
+    /**
+     * Construct a CursorResponseDto populated from a Slice and an explicit next-cursor value.
+     *
+     * @param slice      the Slice representing the current page of items; its content and element count are used
+     *                   to populate this DTO
+     * @param nextCursor the cursor value to use for the next page (may be null if no subsequent page is available)
+     */
     public CursorResponseDto(Slice<T> slice, String nextCursor) {
         this.content = slice.getContent();
         this.pageSize = slice.getNumberOfElements();

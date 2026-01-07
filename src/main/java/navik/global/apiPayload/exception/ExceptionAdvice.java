@@ -31,11 +31,11 @@ import java.util.Optional;
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     /**
-     * @param e       발생한 {@link ConstraintViolationException}
-     * @param request 현재 요청 객체
-     * @return 에러 응답 {@link ApiResponse}
-     * @Valid 어노테이션을 통한 검증 실패 시 발생하는 {@link ConstraintViolationException}을 처리합니다.
-     * 주로 @RequestParam, @PathVariable 에서 검증 실패 시 발생합니다.
+     * Handle validation failures from constraint-based validation on request parameters and produce a standardized error response.
+     *
+     * @param e       the ConstraintViolationException containing one or more constraint violations (commonly from @RequestParam or @PathVariable validation)
+     * @param request the current WebRequest (context for the request)
+     * @return        an ApiResponse representing a failure, mapped from the first constraint violation message to a GeneralErrorCode
      */
     @ExceptionHandler
     public ApiResponse<Object> validation(ConstraintViolationException e, WebRequest request) {
@@ -50,14 +50,19 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * @param e       발생한 {@link MethodArgumentNotValidException}
-     * @param headers 응답에 포함될 HTTP 헤더
-     * @param status  응답의 HTTP 상태 코드
-     * @param request 현재 요청 객체
-     * @return 에러 응답 {@link ResponseEntity}
-     * @Valid 어노테이션을 통한 검증 실패 시 발생하는 {@link MethodArgumentNotValidException}을 처리합니다.
-     * 주로 @RequestBody 에서 검증 실패 시 발생합니다.
-     */
+         * Handles validation failures raised for a controller method's request body.
+         *
+         * Aggregates field errors into a map from field name to concatenated error messages,
+         * and returns a ResponseEntity containing an {@link ApiResponse} with {@link GeneralErrorCode#INVALID_INPUT_VALUE}
+         * and the map of field errors.
+         *
+         * @param e       the {@link MethodArgumentNotValidException} containing validation errors
+         * @param headers the HTTP headers to include in the response
+         * @param status  the HTTP status code for the response
+         * @param request the current request
+         * @return a {@link ResponseEntity} wrapping an {@link ApiResponse} with {@link GeneralErrorCode#INVALID_INPUT_VALUE}
+         *         and a map of field names to their validation messages
+         */
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers,
                                                                HttpStatusCode status, WebRequest request) {
@@ -76,14 +81,12 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * JSON Request Body 파싱 실패 시 발생하는 {@link HttpMessageNotReadableException}을 처리합니다.
-     * 주로 잘못된 형식의 JSON이나 Enum 타입 불일치 시 발생합니다.
+     * Handle cases where the request JSON cannot be read or parsed.
      *
-     * @param e       발생한 {@link HttpMessageNotReadableException}
-     * @param headers 응답에 포함될 HTTP 헤더
-     * @param status  응답의 HTTP 상태 코드
-     * @param request 현재 요청 객체
-     * @return 에러 응답 {@link ResponseEntity}
+     * <p>Triggered for malformed JSON, missing required structure, or type mismatches (including enum mismatches).</p>
+     *
+     * @param e the HttpMessageNotReadableException thrown when the request body cannot be parsed
+     * @return a ResponseEntity containing an ApiResponse representing an INVALID_INPUT_VALUE failure
      */
     @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers,
@@ -93,12 +96,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * 처리되지 않은 모든 예외를 처리합니다.
-     * 500 Internal Server Error를 반환합니다.
+     * Handle uncaught exceptions and return a standardized internal server error response.
      *
-     * @param e       발생한 {@link Exception}
-     * @param request 현재 요청 객체
-     * @return 에러 응답 {@link ApiResponse}
+     * @param e       the uncaught {@link Exception}
+     * @param request the current {@link org.springframework.web.context.request.WebRequest}
+     * @return the {@link ApiResponse} containing {@code INTERNAL_SERVER_ERROR} and the exception message
      */
     @ExceptionHandler
     public ApiResponse<String> exception(Exception e, WebRequest request) {
@@ -107,11 +109,9 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * 비즈니스 로직 실행 중 발생하는 커스텀 예외 {@link GeneralExceptionHandler}을 처리합니다.
+     * Handle custom business exceptions of type GeneralExceptionHandler.
      *
-     * @param generalException 발생한 {@link GeneralExceptionHandler}
-     * @param request          현재 요청 객체
-     * @return 에러 응답 {@link ApiResponse}
+     * @return an ApiResponse containing the exception's BaseCode and no additional data
      */
     @ExceptionHandler(value = GeneralExceptionHandler.class)
     public ApiResponse<Object> onThrowException(GeneralExceptionHandler generalException, HttpServletRequest request) {

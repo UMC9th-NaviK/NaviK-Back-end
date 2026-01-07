@@ -20,10 +20,11 @@ public class S3Config {
     private String region;
 
     /**
-     * S3 Presigner를 Spring Bean으로 생성하여 제공합니다.
-     * S3 Presigner는 S3 객체에 대한 미리 서명된 URL을 생성하는 데 사용됩니다.
+     * Create an S3Presigner Spring bean for generating pre-signed S3 URLs.
      *
-     * @return S3Presigner 인스턴스
+     * Configures the presigner with the application's AWS region and the SDK's default credentials provider.
+     *
+     * @return an S3Presigner configured with the application's AWS region and DefaultCredentialsProvider
      */
     @Bean
     public S3Presigner s3Presigner() {

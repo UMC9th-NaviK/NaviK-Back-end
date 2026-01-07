@@ -26,6 +26,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Setter
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 
+    /**
+     * Load or create a Member from provider attributes and produce an OAuth2User whose principal is the member's ID.
+     *
+     * @param userRequest the OAuth2 user request containing client registration and access token
+     * @return an OAuth2User with authorities derived from the Member's role and attributes that include a "memberId" principal
+     * @throws OAuth2AuthenticationException if the underlying OAuth2UserService fails to load the provider user
+     */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
@@ -49,6 +56,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 "memberId");
     }
 
+    /**
+     * Creates or updates a Member record based on the given OAuth attributes and persists the result.
+     *
+     * @param attributes OAuthAttributes containing the provider's user information (email, name, etc.)
+     * @return the persisted Member reflecting any applied updates or the newly created entity
+     */
     private Member saveOrUpdate(OAuthAttributes attributes) {
         Member member = memberRepository.findByEmail(attributes.getEmail())
                 .map(entity -> entity.update(attributes.getName()))

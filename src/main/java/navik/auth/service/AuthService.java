@@ -30,6 +30,18 @@ public class AuthService {
     @org.springframework.beans.factory.annotation.Value("${spring.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
 
+    /**
+     * Reissues authentication tokens based on a valid refresh token.
+     *
+     * <p>Validates the supplied refresh token, ensures it matches the stored refresh token for the
+     * corresponding user, generates a new TokenDto (access + refresh tokens), and updates the stored
+     * refresh token in Redis.</p>
+     *
+     * @param refreshToken the refresh JWT presented by the client
+     * @return a TokenDto containing newly issued access and refresh tokens
+     * @throws GeneralExceptionHandler if the refresh token is invalid or not found
+     * @throws GeneralExceptionHandler if the provided refresh token does not match the stored token
+     */
     @Transactional
     public TokenDto reissue(String refreshToken) {
         // 1. Refresh Token 검증
@@ -62,6 +74,17 @@ public class AuthService {
         return tokenDto;
     }
 
+    /**
+     * Invalidate the current session by removing the user's refresh token from storage and blacklisting the access token.
+     *
+     * Validates the provided access token (accepts tokens prefixed with "Bearer "), derives the authenticated user,
+     * deletes any refresh token stored for that user, and stores the access token in Redis blacklist with a TTL equal
+     * to the token's remaining expiration.
+     *
+     * @param accessToken the access JWT string; may include a "Bearer " prefix
+     * @param refreshToken the refresh token value provided by the client (the method removes any stored refresh token for the authenticated user; the provided value is not validated)
+     * @throws GeneralExceptionHandler if the access token is invalid (AuthErrorCode.AUTH_TOKEN_INVALID)
+     */
     @Transactional
     public void logout(String accessToken, String refreshToken) {
         // Bearer 제거
@@ -88,6 +111,12 @@ public class AuthService {
                 .set("blacklist:" + accessToken, "logout", expiration, java.util.concurrent.TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Create an HTTP-only, secure cookie that stores the refresh token for authentication endpoints.
+     *
+     * @param refreshToken the refresh token value to be stored in the cookie
+     * @return a ResponseCookie named "refresh_token" with Path=/v1/auth, HttpOnly, Secure, SameSite=None, and Max-Age set to the configured refresh token validity
+     */
     public org.springframework.http.ResponseCookie createRefreshTokenCookie(String refreshToken) {
         return org.springframework.http.ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)

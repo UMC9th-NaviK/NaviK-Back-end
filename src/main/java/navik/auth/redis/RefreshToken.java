@@ -20,6 +20,11 @@ public class RefreshToken {
     @Indexed
     private String token;
 
+    /**
+     * Update the stored refresh token for this entity.
+     *
+     * @param token the new refresh token string to store
+     */
     public void updateToken(String token) {
         this.token = token;
     }

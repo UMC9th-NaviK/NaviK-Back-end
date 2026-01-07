@@ -36,6 +36,13 @@ public class JwtTokenProvider {
     // Key -> SecretKey 타입 변경 (0.12.x 권장)
     private final SecretKey key;
 
+    /**
+     * Initialize a JwtTokenProvider with a signing key and token lifetimes.
+     *
+     * @param secretKey                        a base64-encoded secret used to derive the HMAC signing key
+     * @param accessTokenValidityInSeconds     access token lifetime in seconds (converted to milliseconds internally)
+     * @param refreshTokenValidityInSeconds    refresh token lifetime in seconds (converted to milliseconds internally)
+     */
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey,
                             @Value("${spring.jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
                             @Value("${spring.jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds) {
@@ -45,6 +52,17 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Creates a JWT access token for the given authentication.
+     *
+     * The token's subject is the authentication name, the authorities are stored under the
+     * "auth" claim, and the token is stamped with an expiration based on the configured
+     * access token validity.
+     *
+     * @param authentication the authenticated principal whose name becomes the token subject
+     *                       and whose granted authorities are encoded into the token
+     * @return the compact serialized JWT access token containing subject, authorities, and expiration
+     */
     public String generateAccessToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -61,6 +79,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Creates a signed refresh JWT for the provided authentication subject.
+     *
+     * @param authentication the authentication whose name() is used as the token subject (typically the user's email)
+     * @return the signed refresh token string that expires according to the configured refresh token validity
+     */
     public String generateRefreshToken(Authentication authentication) {
         long now = (new Date()).getTime();
         return Jwts.builder()
@@ -70,6 +94,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Creates access and refresh JWTs for the given authentication and returns a TokenDto with token values and access expiry.
+     *
+     * @param authentication the authenticated principal used as the JWT subject and to derive authorities
+     * @return a TokenDto containing the grant type ("Bearer"), the access token, access token expiration time in epoch milliseconds, and the refresh token
+     */
     public TokenDto generateTokenDto(Authentication authentication) {
         String accessToken = generateAccessToken(authentication);
         String refreshToken = generateRefreshToken(authentication);
@@ -85,6 +115,13 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    /**
+     * Create an Authentication object from the provided JWT access token.
+     *
+     * @param accessToken the JWT access token containing subject and `auth` claim
+     * @return an Authentication whose principal is a UserDetails with the token subject and whose authorities are parsed from the token's `auth` claim
+     * @throws GeneralExceptionHandler if the token does not contain the `auth` claim (AuthErrorCode.TOKEN_NOT_FOUND)
+     */
     public Authentication getAuthentication(String accessToken) {
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
@@ -103,6 +140,14 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    /**
+     * Validates the JWT's signature and expiration using the provider's signing key.
+     *
+     * @param token the compact JWT string to validate
+     * @return `true` if the token is valid
+     * @throws GeneralExceptionHandler with AuthErrorCode.AUTH_TOKEN_INVALID when the token is malformed, has an invalid signature, is unsupported, or is otherwise invalid
+     * @throws GeneralExceptionHandler with AuthErrorCode.AUTH_TOKEN_EXPIRED when the token has expired
+     */
     public boolean validateToken(String token) {
         try {
             // [변경 5] parserBuilder() -> parser(), verifyWith(key), parseSignedClaims()
@@ -126,6 +171,12 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * Calculates the remaining validity time for the provided access token.
+     *
+     * @param accessToken the JWT access token to inspect
+     * @return remaining time in milliseconds until the token's expiration; negative if the token is already expired
+     */
     public Long getExpiration(String accessToken) {
         // accessToken 남은 유효시간
         Date expiration = parseClaims(accessToken).getExpiration();
@@ -134,6 +185,12 @@ public class JwtTokenProvider {
         return (expiration.getTime() - now);
     }
 
+    /**
+     * Parse and return the signed JWT claims from the provided token.
+     *
+     * @param accessToken the JWT string to parse
+     * @return the token's {@link io.jsonwebtoken.Claims}; if the token is expired, returns the expired claims from the exception
+     */
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parser()
@@ -146,6 +203,12 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * Extracts the subject (principal) from the provided JWT.
+     *
+     * @param token the JWT string to parse
+     * @return the token's subject (the `sub` claim)
+     */
     public String getSubject(String token) {
         return parseClaims(token).getSubject();
     }

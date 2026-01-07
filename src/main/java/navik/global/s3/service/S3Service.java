@@ -29,12 +29,14 @@ public class S3Service {
     private String bucket;
 
     /**
-     * S3에 파일을 업로드하기 위한 Presigned URL을 생성합니다.
+     * Generate a presigned S3 PUT URL for uploading a file.
      *
-     * @param prefix   S3 버킷 내에서 파일이 저장될 폴더 경로입니다.
-     * @param fileName 업로드할 파일의 원래 이름입니다.
-     * @return Presigned URL과 파일 키를 포함하는 {@link S3Dto.PreSignedUrlResponse} 객체를
-     * 반환합니다.
+     * The returned response contains the presigned URL (valid for 10 minutes) and the S3 object key.
+     * The object key is generated as "{prefix}/{UUID}_{fileName}".
+     *
+     * @param prefix   the S3 folder path (key prefix) where the file will be stored
+     * @param fileName the original name of the file to be uploaded
+     * @return a {@link S3Dto.PreSignedUrlResponse} containing the presigned URL and the generated object key
      */
     public S3Dto.PreSignedUrlResponse getPreSignedUrl(String prefix, String fileName) {
         String key = prefix + "/" + UUID.randomUUID() + "_" + fileName;

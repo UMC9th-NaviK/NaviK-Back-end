@@ -11,6 +11,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    /**
+     * Creates the OpenAPI specification configured with API metadata and global JWT bearer authentication.
+     *
+     * Configures a SecurityScheme named "JWT Authentication" (HTTP bearer, bearerFormat "JWT"), registers it in Components,
+     * and applies a SecurityRequirement referencing that scheme to the OpenAPI instance.
+     *
+     * @return an OpenAPI instance populated with API info, the JWT bearer SecurityRequirement, and the corresponding Components
+     */
     @Bean
     public OpenAPI openAPI() {
         String jwtSchemeName = "JWT Authentication";
@@ -32,6 +40,11 @@ public class SwaggerConfig {
                 .components(components);
     }
 
+    /**
+     * Provides the OpenAPI metadata for the application (title, description, and version).
+     *
+     * @return an Info instance containing the API title "Navik API Documentation", the description "Navik API 명세서입니다.", and the version "1.0.0".
+     */
     private Info apiInfo() {
         return new Info()
                 .title("Navik API Documentation")

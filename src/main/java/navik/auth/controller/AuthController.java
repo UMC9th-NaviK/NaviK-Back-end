@@ -21,6 +21,13 @@ public class AuthController implements AuthControllerDocs {
 
     private final AuthService authService;
 
+    /**
+     * Refreshes authentication tokens using the provided refresh token and sets a new refresh-token cookie in the response.
+     *
+     * @param refreshToken the current refresh token sent in the `refresh_token` cookie
+     * @param response the HTTP response where the refreshed `refresh_token` cookie will be added
+     * @return an ApiResponse containing the newly issued access token
+     */
     @PostMapping("/refresh")
     public ApiResponse<String> reissue(@CookieValue("refresh_token") String refreshToken,
                                        HttpServletResponse response) {
@@ -34,6 +41,14 @@ public class AuthController implements AuthControllerDocs {
         return ApiResponse.onSuccess(GeneralSuccessCode._OK, tokenDto.getAccessToken());
     }
 
+    /**
+     * Invalidate the current authentication session by revoking tokens and clearing the refresh token cookie.
+     *
+     * @param accessToken  the value of the `Authorization` header containing the access token
+     * @param refreshToken the value of the `refresh_token` cookie
+     * @param response     the HTTP response used to set the cleared refresh token cookie
+     * @return an ApiResponse containing a success message indicating that logout completed
+     */
     @PostMapping("/logout")
     public ApiResponse<String> logout(@RequestHeader("Authorization") String accessToken,
                                       @CookieValue("refresh_token") String refreshToken,

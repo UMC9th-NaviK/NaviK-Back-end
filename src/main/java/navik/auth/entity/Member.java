@@ -33,13 +33,23 @@ public class Member extends BaseEntity {
     private String socialId; // 소셜 로그인 제공자에서 주는 ID
 
     @Column(nullable = false)
-    private String socialType; // google, kakao, naver
+    private String socialType; /**
+     * Update the member's name and return the same instance.
+     *
+     * @param name the new name for the member
+     * @return the updated Member instance with the name set to the provided value
+     */
 
     public Member update(String name) {
         this.name = name;
         return this;
     }
 
+    /**
+     * Retrieve the key associated with this member's role.
+     *
+     * @return the role's key as a String
+     */
     public String getRoleKey() {
         return this.role.getKey();
     }

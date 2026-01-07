@@ -44,6 +44,14 @@ public class PageResponseDto<T> {
      */
     private final boolean last;
 
+    /**
+     * Creates a PageResponseDto populated from the given Spring Data Page.
+     *
+     * Copies the page content and pagination metadata into the DTO. The page number
+     * is converted from the Page's 0-based index to a 1-based value.
+     *
+     * @param page the source Spring Data Page whose content and pagination metadata will be copied
+     */
     public PageResponseDto(Page<T> page) {
         this.content = page.getContent();
         this.pageNumber = page.getNumber() + 1; // 0-based to 1-based

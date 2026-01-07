@@ -19,6 +19,12 @@ public class UserResponseDto {
     private Role role;
     private String socialType;
 
+    /**
+     * Create a UserResponseDto populated from the given Member entity.
+     *
+     * @param member the Member entity whose id, name, email, role, and socialType are copied into the DTO
+     * @return a UserResponseDto with fields copied from the provided Member
+     */
     public static UserResponseDto from(Member member) {
         return UserResponseDto.builder()
                 .id(member.getId())

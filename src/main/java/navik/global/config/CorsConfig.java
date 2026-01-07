@@ -11,6 +11,12 @@ import java.util.List;
 
 @Configuration
 public class CorsConfig {
+    /**
+     * Creates a CorsConfigurationSource that enables cross-origin requests from https://your-frontend.com,
+     * allows credentials, permits GET/POST/PUT/DELETE methods, and accepts all request headers for all paths.
+     *
+     * @return a CorsConfigurationSource configured with the described CORS policy and registered for "/**"
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

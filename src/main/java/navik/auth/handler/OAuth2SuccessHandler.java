@@ -35,6 +35,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${spring.oauth2.redirect-url}")
     private String redirectUrl;
 
+    /**
+     * Handle a successful OAuth2 authentication by issuing tokens, persisting the refresh token,
+     * setting a secure HttpOnly refresh-token cookie scoped to /v1/auth, and redirecting the client
+     * to the configured redirect URL.
+     *
+     * @param authentication the authenticated principal used to generate and associate tokens
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -52,6 +59,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
+    /**
+     * Persists a refresh token for the authenticated user.
+     *
+     * @param authentication provides the authenticated user's identifier (used as the RefreshToken id)
+     * @param tokenDto      contains the refresh token value to persist
+     */
     private void saveRefreshToken(Authentication authentication, TokenDto tokenDto) {
 
         RefreshToken refreshToken = RefreshToken.builder()
@@ -62,6 +75,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshTokenRepository.save(refreshToken);
     }
 
+    /**
+     * Attaches the refresh token to the HTTP response as an HttpOnly, Secure cookie named "refresh_token".
+     *
+     * The cookie is scoped to path "/v1/auth", uses the configured max age (refreshTokenValidityInSeconds),
+     * and sets SameSite=None.
+     *
+     * @param tokenDto token container whose refresh token value will be stored in the cookie
+     */
     private void setRefreshTokenCookie(HttpServletResponse response, TokenDto tokenDto) {
 
         ResponseCookie cookie = ResponseCookie.from("refresh_token", tokenDto.getRefreshToken())

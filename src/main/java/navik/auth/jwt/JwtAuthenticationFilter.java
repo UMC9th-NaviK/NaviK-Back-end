@@ -27,6 +27,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Intercepts the HTTP request to authenticate a JWT (if present), populate the SecurityContext, and continue the filter chain.
+     *
+     * If a Bearer token is present and valid, the method sets the corresponding Authentication into the SecurityContext.
+     * If a GeneralExceptionHandler is thrown during token processing, the method writes a JSON error response with the
+     * status and body derived from the exception and does not continue normal processing.
+     *
+     * @param request the incoming HTTP servlet request
+     * @param response the HTTP servlet response used to write an error body when authentication fails
+     * @param filterChain the filter chain to continue request processing when authentication succeeds or is absent
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -60,7 +71,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    // Request Header 에서 토큰 정보를 꺼내오기
+    /**
+     * Extracts the Bearer token from the request's Authorization header.
+     *
+     * @param request the HTTP servlet request containing headers
+     * @return the token string following the "Bearer " prefix, or `null` if no Bearer token is present
+     */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {

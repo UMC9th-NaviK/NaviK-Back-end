@@ -9,23 +9,23 @@ import org.springframework.http.HttpStatus;
 public interface BaseCode {
 
     /**
-     * 에러(성공)에 해당하는 HTTP 상태를 반환합니다.
-     *
-     * @return {@link HttpStatus}
-     */
+ * The HTTP status associated with this code.
+ *
+ * @return the HTTP status corresponding to this code
+ */
     HttpStatus getHttpStatus();
 
     /**
-     * 에러(성공)를 식별하는 고유한 코드 문자열을 반환합니다.
-     *
-     * @return 에러 코드
-     */
+ * Unique identifier string for this success or error code.
+ *
+ * @return a unique code string identifying the success or error condition
+ */
     String getCode();
 
     /**
-     * 에러(성공)에 대한 설명 메시지를 반환합니다.
-     *
-     * @return 에러 메시지
-     */
+ * Provides a human-readable message describing the code.
+ *
+ * @return the descriptive message associated with this code
+ */
     String getMessage();
 }

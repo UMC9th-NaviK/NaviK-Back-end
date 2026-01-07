@@ -22,6 +22,11 @@ import java.time.LocalDateTime;
 @Getter
 public class ApiResponse<T> extends ResponseEntity<ApiResponse.Body<T>> {
 
+    /**
+     * Constructs an ApiResponse backed by the given ResponseEntity.
+     *
+     * @param responseEntity the ResponseEntity whose body, headers, and status code will back this ApiResponse
+     */
     private ApiResponse(ResponseEntity<Body<T>> responseEntity) {
         super(responseEntity.getBody(), responseEntity.getHeaders(), responseEntity.getStatusCode());
     }
@@ -48,59 +53,61 @@ public class ApiResponse<T> extends ResponseEntity<ApiResponse.Body<T>> {
     }
 
     /**
-     * 성공적인 API 응답을 생성합니다.
+     * Create a successful API response with the given code and payload.
      *
-     * @param code   성공 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param result 응답 데이터
-     * @param <T>    응답 데이터의 타입
-     * @return 성공 응답 {@link ApiResponse}
+     * @param code   the {@link BaseCode} that provides the response code and message
+     * @param result the response payload
+     * @param <T>    the type of the response payload
+     * @return       an {@link ApiResponse} whose body is marked successful (`isSuccess = true`) and contains the provided code, message, result, and a current timestamp
      */
     public static <T> ApiResponse<T> onSuccess(BaseCode code, T result) {
         return buildResponse(true, code, result, null);
     }
 
     /**
-     * 성공적인 API 응답을 생성합니다. (응답 데이터가 없는 경우)
+     * Create a successful API response with no result payload.
      *
-     * @param code 성공 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param <T>  응답 데이터의 타입
-     * @return 성공 응답 {@link ApiResponse}
+     * @param code the {@link BaseCode} containing the response code, message, and HTTP status
+     * @param <T>  the response payload type (unused when no result is provided)
+     * @return      an {@link ApiResponse} representing the success response
      */
     public static <T> ApiResponse<T> onSuccess(BaseCode code) {
         return onSuccess(code, null);
     }
 
     /**
-     * 실패한 API 응답을 생성합니다.
+     * Create an API response representing a failure.
      *
-     * @param code   에러 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param result 응답 데이터 (주로 디버깅을 위한 정보)
-     * @param <T>    응답 데이터의 타입
-     * @return 실패 응답 {@link ApiResponse}
+     * The response's HTTP status and message are taken from the provided {@link BaseCode}.
+     *
+     * @param code   the {@link BaseCode} that provides the response code, message, and HTTP status
+     * @param result the response payload to include in the body (commonly used for debugging); may be null
+     * @param <T>    type of the response payload
+     * @return       an {@link ApiResponse} whose body has `isSuccess = false` and includes the provided code, message, result, and a timestamp
      */
     public static <T> ApiResponse<T> onFailure(BaseCode code, T result) {
         return buildResponse(false, code, result, null);
     }
 
     /**
-     * 실패한 API 응답을 생성합니다. (응답 데이터가 없는 경우)
+     * Create an ApiResponse representing a failed request with no payload.
      *
-     * @param code 에러 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param <T>  응답 데이터의 타입
-     * @return 실패 응답 {@link ApiResponse}
+     * @param code the BaseCode providing the failure code, message, and HTTP status
+     * @param <T>  response payload type (unused for this overload)
+     * @return an ApiResponse populated as a failure with no result
      */
     public static <T> ApiResponse<T> onFailure(BaseCode code) {
         return onFailure(code, null);
     }
 
     /**
-     * 헤더를 포함한 성공적인 API 응답을 생성합니다.
+     * Create a successful API response including optional HTTP headers.
      *
-     * @param headers 응답에 포함될 HTTP 헤더
-     * @param code    성공 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param result  응답 데이터
-     * @param <T>     응답 데이터의 타입
-     * @return 성공 응답 {@link ApiResponse}
+     * @param headers HTTP headers to include in the response
+     * @param code    {@link BaseCode} that supplies the response code, message, and HTTP status
+     * @param result  the response payload
+     * @param <T>     type of the response payload
+     * @return        an {@link ApiResponse} whose body indicates success and contains the provided code, message, result, and timestamp
      */
     public static <T> ApiResponse<T> onSuccess(HttpHeaders headers, BaseCode code, T result) {
         return buildResponse(true, code, result, headers);
@@ -120,19 +127,28 @@ public class ApiResponse<T> extends ResponseEntity<ApiResponse.Body<T>> {
     }
 
     /**
-     * 실패한 API 응답의 Body만 생성합니다.
-     * Spring Security 필터 등에서 직접 응답을 작성할 때 사용합니다.
+     * Create a response Body representing a failed API result for direct response writing.
      *
-     * @param code 에러 코드와 메시지를 담고 있는 {@link BaseCode}
-     * @param <T>  응답 데이터의 타입
-     * @return 실패 응답 Body {@link Body}
+     * Intended for use when writing a response directly (for example, in security filters).
+     *
+     * @param code the {@link BaseCode} providing the failure code and message
+     * @param <T>  the response payload type
+     * @return a {@link Body} populated for failure (failure flag set, code and message from `code`, `result` set to null, and current timestamp)
      */
     public static <T> Body<T> createFailureBody(BaseCode code) {
         return createBody(false, code, null);
     }
 
     /**
-     * API 응답을 생성하는 통합 빌더 메서드입니다.
+     * Build an ApiResponse with the HTTP status derived from the provided BaseCode, a Body
+     * populated from the success flag, code, message and result, and optional HTTP headers.
+     *
+     * @param isSuccess whether the response represents a successful outcome
+     * @param code      the BaseCode supplying the response code, message, and HTTP status
+     * @param result    the response payload to include in the body (may be null)
+     * @param headers   optional HTTP headers to include on the response; may be null
+     * @return          an ApiResponse whose HTTP status is taken from `code` and whose body
+     *                  contains the constructed Body object
      */
     private static <T> ApiResponse<T> buildResponse(boolean isSuccess, BaseCode code, T result, HttpHeaders headers) {
         ResponseEntity.BodyBuilder builder = ResponseEntity.status(code.getHttpStatus());
@@ -143,7 +159,12 @@ public class ApiResponse<T> extends ResponseEntity<ApiResponse.Body<T>> {
     }
 
     /**
-     * API 응답 Body를 생성하는 내부 헬퍼 메서드입니다.
+     * Create an API response body populated from the provided code and result.
+     *
+     * @param isSuccess whether the response represents a success
+     * @param code      the BaseCode supplying the response code and message
+     * @param result    the payload to include in the response body; may be null
+     * @return          a Body<T> populated with `isSuccess`, `code`, `message`, `result`, and a timestamp set to the current time
      */
     private static <T> Body<T> createBody(boolean isSuccess, BaseCode code, T result) {
         return Body.<T>builder()

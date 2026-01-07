@@ -18,11 +18,23 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
+    /**
+     * Determines whether the given method parameter is annotated with {@code @AuthUser}.
+     *
+     * @param parameter the method parameter to inspect for the {@code AuthUser} annotation
+     * @return {@code true} if the parameter has the {@code AuthUser} annotation, {@code false} otherwise
+     */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthUser.class);
     }
 
+    /**
+     * Resolve an @AuthUser method parameter by supplying the current authenticated principal.
+     *
+     * @return the authenticated principal as a UserDetails instance
+     * @throws GeneralExceptionHandler with AuthErrorCode.UNAUTHORIZED if authentication is missing, anonymous, not authenticated, or the principal is not a UserDetails
+     */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
