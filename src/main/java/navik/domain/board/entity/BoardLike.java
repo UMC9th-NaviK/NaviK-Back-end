@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Table("board_like")
+@Table(name = "board_like")
 public class BoardLike extends BaseEntity {
 
     @Id
