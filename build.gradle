@@ -5,12 +5,11 @@ plugins {
 }
 
 group = 'navik'
-version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+version = '1.0.0' // 개발 버전에 맞춰 선택 (로컬 기준)
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(17) // 최신 권장 방식 유지
     }
 }
 
@@ -25,8 +24,7 @@ repositories {
 }
 
 dependencies {
-
-    // Spring Starter
+    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -36,12 +34,24 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-aspectj'
 
+    // Database
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // JWT (로컬 보안 설정 유지)
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // AWS S3
+    implementation platform('software.amazon.awssdk:bom:2.21.1')
+    implementation 'software.amazon.awssdk:s3'
+
+    // Swagger/OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    // Hibernate vector-search
-    implementation 'org.hibernate.orm:hibernate-vector:6.5.2.Final'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
