@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,8 @@ import navik.global.entity.BaseEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Table(name = "board_likes")
+@Table(name = "board_likes",
+	uniqueConstraints = @UniqueConstraint(columnNames = {"board_id", "user_id"}))
 public class BoardLike extends BaseEntity {
 
 	@Id

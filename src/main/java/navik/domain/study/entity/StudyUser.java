@@ -58,6 +58,6 @@ public class StudyUser extends BaseEntity {
 	@Column(name = "member_start_date", nullable = false)
 	private LocalDateTime memberStartDate;
 
-	@Column(name = "member_end_date", nullable = false)
+	@Column(name = "member_end_date")
 	private LocalDateTime memberEndDate;
 }
