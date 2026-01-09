@@ -45,6 +45,6 @@ public class Evaluation extends BaseEntity {
 	@Column(name = "score", nullable = false)
 	private float score;
 
-	@Column(name = "comment", nullable = false)
-	private String comment;
+	@Column(name = "content", nullable = false)
+	private String content;
 }
