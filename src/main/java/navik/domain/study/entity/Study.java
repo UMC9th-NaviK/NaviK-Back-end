@@ -30,24 +30,24 @@ public class Study extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "study_title", nullable = false)
-	private String studyTitle;
+	@Column(name = "title", nullable = false)
+	private String title;
 
-	@Column(name = "study_limit", nullable = false)
-	private Integer studyLimit;
+	@Column(name = "limit", nullable = false)
+	private Integer limit;
 
-	@Column(name = "study_description", nullable = false)
-	private String studyDescription;
+	@Column(name = "description", nullable = false)
+	private String description;
 
-	@Column(name = "study_start", nullable = false)
-	private LocalDateTime studyStart;
+	@Column(name = "start_date", nullable = false)
+	private LocalDateTime startDate;
 
-	@Column(name = "study_end", nullable = false)
-	private LocalDateTime studyEnd;
+	@Column(name = "end_date", nullable = false)
+	private LocalDateTime endDate;
 
-	@Column(name = "recruitment", nullable = false)
+	@Column(name = "recruitment_status", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private RecruitmentStatus recruitment;
+	private RecruitmentStatus recruitmentStatus;
 
 	@Column(name = "social_id", nullable = false)
 	private String socialId;

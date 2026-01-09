@@ -52,11 +52,12 @@ public class StudyUser extends BaseEntity {
 	private AttendStatus attend;
 
 	@Column(name = "is_active", nullable = false)
-	private boolean active;
+	@Builder.Default
+	private boolean isActive = false;
 
-	@Column(name = "member_study_start", nullable = false)
-	private LocalDateTime memberStart;
+	@Column(name = "member_start_date", nullable = false)
+	private LocalDateTime memberStartDate;
 
-	@Column(name = "member_study_end", nullable = false)
-	private LocalDateTime memberEnd;
+	@Column(name = "member_end_date", nullable = false)
+	private LocalDateTime memberEndDate;
 }
