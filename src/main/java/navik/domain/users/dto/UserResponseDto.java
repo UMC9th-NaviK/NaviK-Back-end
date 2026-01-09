@@ -12,7 +12,7 @@ public class UserResponseDTO {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Getter
-	public static class UserInfoDTO{
+	public static class UserInfoDTO {
 		private Long id;
 		private String name;
 		String email;
