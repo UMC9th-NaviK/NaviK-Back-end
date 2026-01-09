@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import navik.domain.users.entity.User;
-import navik.domain.users.repository.UserRepository;
+import navik.domain.users.repository.userRepository;
 
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-	private final UserRepository memberRepository;
+	private final userRepository userRepository;
 
 	@Setter
 	private OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
@@ -39,21 +39,21 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 		User user = saveOrUpdate(attributes);
 
-		// Member ID를 Principal Name으로 사용하기 위해 attributes에 memberId 추가
+		// User ID를 Principal Name으로 사용하기 위해 attributes에 userId 추가
 		Map<String, Object> newAttributes = new java.util.HashMap<>(attributes.getAttributes());
-		newAttributes.put("memberId", String.valueOf(user.getId()));
+		newAttributes.put("userId", String.valueOf(user.getId()));
 
 		return new DefaultOAuth2User(
 			Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
 			newAttributes,
-			"memberId");
+			"userId");
 	}
 
 	private User saveOrUpdate(OAuthAttributes attributes) {
-		User user = memberRepository.findByEmail(attributes.getEmail())
+		User user = userRepository.findByEmail(attributes.getEmail())
 			//.map(entity -> entity.update(attributes.getName()))
 			.orElse(attributes.toEntity());
 
-		return memberRepository.save(user);
+		return userRepository.save(user);
 	}
 }
