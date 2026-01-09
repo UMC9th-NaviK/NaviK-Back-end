@@ -19,7 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import navik.domain.job.entity.Job;
-import navik.global.common.BaseEntity;
+import navik.global.entity.BaseEntity;
 
 @Entity
 @Getter

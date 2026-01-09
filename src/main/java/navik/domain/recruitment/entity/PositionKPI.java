@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import navik.global.common.BaseEntity;
+import navik.global.entity.BaseEntity;
 
 @Entity
 @Getter

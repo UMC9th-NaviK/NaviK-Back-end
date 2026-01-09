@@ -16,8 +16,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import navik.domain.growthLog.enums.GrowthType;
 import navik.domain.kpi.enitiy.KpiCard;
-import navik.global.common.BaseEntity;
+import navik.global.entity.BaseEntity;
 
 @Entity
 @Getter

@@ -1,38 +1,30 @@
-package navik.domain.study.entity;
+package navik.domain.users.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import navik.domain.kpi.enitiy.KpiCard;
 import navik.global.entity.BaseEntity;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "study_kpis")
-public class StudyKpi extends BaseEntity {
+@Table(name = "terms")
+public class Term extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "kpi_card_id")
-	private KpiCard kpiCard;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "study_id")
-	private Study study;
+	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
+	private String content;
 }

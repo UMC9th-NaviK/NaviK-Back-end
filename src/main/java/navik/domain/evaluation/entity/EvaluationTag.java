@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import navik.domain.evaluation.enums.Tag;
 import navik.domain.evaluation.enums.TagType;
-import navik.global.common.BaseEntity;
+import navik.global.entity.BaseEntity;
 
 @Entity
 @Getter

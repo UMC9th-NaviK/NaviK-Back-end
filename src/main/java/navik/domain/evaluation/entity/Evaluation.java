@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import navik.domain.study.entity.Study;
 import navik.domain.users.entity.User;
-import navik.global.common.BaseEntity;
+import navik.global.entity.BaseEntity;
 
 @Entity
 @Getter
