@@ -15,16 +15,16 @@ import navik.global.apiPayload.exception.handler.GeneralExceptionHandler;
 @Transactional(readOnly = true)
 public class UserService {
 
-	private final UserRepository memberRepository;
+	private final UserRepository userRepository;
 
 	public UserResponseDto getUser(Long userId) {
-		User user = memberRepository.findById(userId)
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
 		return UserResponseDto.from(user);
 	}
 
 	public UserResponseDto getMyInfo(Long userId) {
-		User user = memberRepository.findById(userId)
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
 		return UserResponseDto.from(user);
 	}
