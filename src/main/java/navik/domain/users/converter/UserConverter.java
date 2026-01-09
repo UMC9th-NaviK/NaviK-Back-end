@@ -14,4 +14,13 @@ public class UserConverter {
 			.socialType(user.getSocialType())
 			.build();
 	}
+
+	public static UserResponseDTO.BasicInfoDto toBasicInfoDto(User user) {
+		return UserResponseDTO.BasicInfoDto.builder()
+			.id(user.getId())
+			.name(user.getName())
+			.nickname(user.getNickname())
+			.jobId(user.getJob().getId())
+			.build();
+	}
 }

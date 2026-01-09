@@ -18,15 +18,16 @@ public class UserQueryService {
 
 	private final UserRepository userRepository;
 
-	public UserResponseDTO.UserInfoDTO getUser(Long userId) {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
-		return UserConverter.toUserInfoDTO(user);
+	public UserResponseDTO.UserInfoDTO getUserInfo(Long userId) {
+		return UserConverter.toUserInfoDTO(getUser(userId));
 	}
 
 	public UserResponseDTO.UserInfoDTO getMyInfo(Long userId) {
-		User user = userRepository.findById(userId)
+		return UserConverter.toUserInfoDTO(getUser(userId));
+	}
+
+	public User getUser(Long userId) {
+		return userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
-		return UserConverter.toUserInfoDTO(user);
 	}
 }
