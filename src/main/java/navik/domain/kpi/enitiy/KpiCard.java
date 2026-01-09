@@ -1,5 +1,9 @@
 package navik.domain.kpi.enitiy;
 
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,10 +33,27 @@ public class KpiCard extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "job_id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "job_id", nullable = false)
 	private Job job;
 
-	@Column(name = "content", nullable = false)
-	private String content;
+	@Column(name = "name", nullable = false, length = 100)
+	private String name;
+
+	@Column(name = "strong_title", nullable = false, length = 255)
+	private String strongTitle;
+
+	@Column(name = "strong_content", nullable = false, length = 2000)
+	private String strongContent;
+
+	@Column(name = "weak_title", nullable = false, length = 255)
+	private String weakTitle;
+
+	@Column(name = "weak_content", nullable = false, length = 2000)
+	private String weakContent;
+
+	@JdbcTypeCode(SqlTypes.VECTOR)
+	@Array(length = 1536)
+	@Column(name = "embedding", nullable = false)
+	private float[] embedding;
 }
