@@ -34,16 +34,17 @@ public class Comment extends BaseEntity {
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "comment_id")
-	private Comment comment;
+	@JoinColumn(name = "parent_comment_id")
+	private Comment parentComment;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "board_id")
 	private Board board;
 
-	@Column(name = "comment_content", nullable = false)
-	private String commentContent;
+	@Column(name = "content", nullable = false)
+	private String content;
 
-	@Column(name = "comment_deleted", nullable = false)
-	private boolean commentDeleted;
+	@Column(name = "is_deleted", nullable = false)
+	@Builder.Default
+	private boolean isDeleted = false;
 }
