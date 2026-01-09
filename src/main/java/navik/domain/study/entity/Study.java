@@ -33,8 +33,8 @@ public class Study extends BaseEntity {
 	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name = "limit", nullable = false)
-	private Integer limit;
+	@Column(name = "capacity", nullable = false)
+	private Integer capacity;
 
 	@Column(name = "description", nullable = false)
 	private String description;
