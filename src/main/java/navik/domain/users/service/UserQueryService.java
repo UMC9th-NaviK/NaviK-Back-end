@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import navik.domain.users.dto.UserResponseDto;
+import navik.domain.users.converter.UserConverter;
+import navik.domain.users.dto.UserResponseDTO;
 import navik.domain.users.entity.User;
 import navik.domain.users.repository.UserRepository;
 import navik.global.apiPayload.code.status.GeneralErrorCode;
@@ -13,19 +14,19 @@ import navik.global.apiPayload.exception.handler.GeneralExceptionHandler;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService {
+public class UserQueryService {
 
 	private final UserRepository userRepository;
 
-	public UserResponseDto getUser(Long userId) {
+	public UserResponseDTO.UserInfoDTO getUser(Long userId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
-		return UserResponseDto.from(user);
+		return UserConverter.toUserInfoDTO(user);
 	}
 
-	public UserResponseDto getMyInfo(Long userId) {
+	public UserResponseDTO.UserInfoDTO getMyInfo(Long userId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
-		return UserResponseDto.from(user);
+		return UserConverter.toUserInfoDTO(user);
 	}
 }
