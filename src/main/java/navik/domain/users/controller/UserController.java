@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -40,5 +41,10 @@ public class UserController implements UserControllerDocs {
 	public ApiResponse<UserResponseDTO.BasicInfoDto> register(@AuthUser Long userId,
 		@RequestBody @Valid UserRequestDTO.BasicInfoDto req) {
 		return ApiResponse.onSuccess(GeneralSuccessCode._OK, userCommandService.updateBasicInfo(userId, req));
+	}
+
+	@GetMapping("/check-nickname")
+	public ApiResponse<UserResponseDTO.NicknameCheckDto> checkNicknameDuplication(@RequestParam String nickname) {
+		return ApiResponse.onSuccess(GeneralSuccessCode._OK, userQueryService.isNicknameDuplicated(nickname));
 	}
 }

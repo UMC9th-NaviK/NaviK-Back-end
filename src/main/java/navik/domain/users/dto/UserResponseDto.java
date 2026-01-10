@@ -37,4 +37,15 @@ public class UserResponseDTO {
 		private Long jobId;
 		//todo: 경력 타입..?
 	}
+
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	public static class NicknameCheckDto {
+		@NotNull
+		private String nickname;
+		@NotNull
+		private boolean isDuplicated;
+	}
 }

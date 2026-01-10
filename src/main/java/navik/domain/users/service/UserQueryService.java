@@ -26,6 +26,13 @@ public class UserQueryService {
 		return UserConverter.toUserInfoDTO(getUser(userId));
 	}
 
+	public UserResponseDTO.NicknameCheckDto isNicknameDuplicated(String nickname) {
+		return UserResponseDTO.NicknameCheckDto.builder()
+			.nickname(nickname)
+			.isDuplicated(userRepository.existsByNickname(nickname))
+			.build();
+	}
+
 	public User getUser(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new GeneralExceptionHandler(GeneralErrorCode.USER_NOT_FOUND));
